@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>src/exit.png</file>
+        <file>src/max.png</file>
+        <file>src/min.png</file>
+        <file>src/back.png</file>
+        <file>src/front.png</file>
+        <file>src/stop.png</file>
+        <file>src/start.png</file>
+        <file>src/voice.png</file>
+        <file>src/minshow.png</file>
+    </qresource>
+</RCC>

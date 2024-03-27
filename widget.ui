@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>859</width>
+    <height>552</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Widget</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,13">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="title" name="title_widget" native="true">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="6,1">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="7,1">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="showme" name="widget" native="true">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="contarlbar" name="contralbar" native="true">
+         <property name="styleSheet">
+          <string notr="true">QWidget{
+background-color: rgb(253,246,227);
+}</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QDockWidget" name="dockWidget">
+       <property name="maximumSize">
+        <size>
+         <width>120</width>
+         <height>524287</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QDockWidget::title {
+    text-align: right;
+    background-color:rgb(253,246,227);
+    padding-left: 35px;
+}</string>
+       </property>
+       <widget class="playlist" name="playlistwidget"/>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>showme</class>
+   <extends>QWidget</extends>
+   <header>showme.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>contarlbar</class>
+   <extends>QWidget</extends>
+   <header>contarlbar.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>title</class>
+   <extends>QWidget</extends>
+   <header>title.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>playlist</class>
+   <extends>QWidget</extends>
+   <header location="global">playlist.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
