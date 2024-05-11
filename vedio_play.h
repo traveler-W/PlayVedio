@@ -71,6 +71,8 @@ signals:
     void siginal_rect(int w,int h);
 
 private:
+    AVPixelFormat StreamType=AV_PIX_FMT_YUV420P;
+    int flag=4;
     void get_buff_frame();
     QMutex vedio_index_mutex;
 

@@ -74,10 +74,10 @@ void Vedio_play::init(int w,int h,WId id)
     win=SDL_CreateWindowFrom((const void*)handle_windows);
     //win=SDL_CreateWindow("Myplay",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,vedio_width,vedio_height,SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     renderer=SDL_CreateRenderer(win,-1,0);
-    texture=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_IYUV,SDL_TEXTUREACCESS_STREAMING,1920,1080);
+    texture=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_YV12,SDL_TEXTUREACCESS_STREAMING,vedio_width,vedio_height);
 }
-
-
+//SDL_PIXELFORMAT_IYUV
+//SDL_PIXELFORMAT_YV12
 
 
 //主循环函数
@@ -142,12 +142,17 @@ void Vedio_play::vedioRefresh(double *time_this)
         return;
     }
     AVFrame *frame;
-    //frame=vedio_frame.pop();
-
-    //数组中取出数据
-    frame=fvedio_nums.frame_pop();
-
-
+    if(vedio_frame.RtspStream)
+    {
+        frame=vedio_frame.pop();
+    }else{
+        //数组中取出数据
+        frame=fvedio_nums.frame_pop();
+        if(fvedio_nums.v_index>=fvedio_nums.V.size())
+        {
+            return;
+        }
+    }
     //qDebug()<<fvedio_nums.si();
     if(frame)
     {
@@ -160,38 +165,36 @@ void Vedio_play::vedioRefresh(double *time_this)
             std::this_thread::sleep_for(std::chrono::milliseconds(int64_t(diff*1000.0)));
             //return;
         }
-        //渲染
+        //渲染调节比例
         calculate_display_rect(&rect,0,0,change_width,change_height,frame->width,frame->height,frame->sample_aspect_ratio);
 
 
         //缩放帧图片到合适大小
         if(result_frame==NULL)
         {
-           //qDebug()<<"返回函数了";
+           qDebug()<<"返回函数了";
            return;
         }
-
         sws_scale(img_convert_ctx, (const unsigned char* const*)frame->data, frame->linesize, 0,
                                         frame->height, result_frame->data, result_frame->linesize);
         //SDL_UpdateTexture(texture, &rect, result_frame->data[0], result_frame->linesize[0]);
-
-
         if(roation_width!=frame->width||roation_height!=frame->height)
         {
             roation_width=frame->width;
             roation_height=frame->height;
             emit siginal_rect(roation_width,roation_height);
         }
-
-
-        SDL_UpdateYUVTexture(texture,&rect,result_frame->data[0],result_frame->linesize[0],
-                result_frame->data[1],result_frame->linesize[1],
-                result_frame->data[2],result_frame->linesize[2]);
+        SDL_UpdateYUVTexture(texture,0,
+                frame->data[0],frame->linesize[0],
+                frame->data[1],frame->linesize[1],
+                frame->data[2],frame->linesize[2]);
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer,texture,&rect,&rect);
+        SDL_RenderCopy(renderer,texture,0,&rect);
         SDL_RenderPresent(renderer);
-        //av_frame_free(&frame);
-
+        if(vedio_frame.RtspStream)
+        {
+           av_frame_free(&frame);
+        }
     }
 }
 
@@ -224,15 +227,20 @@ void Vedio_play::setvedio_index(double s)
 
 void Vedio_play::get_buff_frame()
 {
-//    result_frame=av_frame_alloc();
-    //计算缩放后的图片大小并且填入数组中
-    int buff_size=av_image_get_buffer_size(AV_PIX_FMT_YUV420P,change_width,change_height,1);
-    unsigned char*buffer=(unsigned char*)av_malloc(buff_size);
-    av_image_fill_arrays(result_frame->data,result_frame->linesize,buffer,AV_PIX_FMT_YUV420P,change_width,change_height,1);
+    if(vedio_frame.RtspStream)
+    {
+        StreamType=AV_PIX_FMT_BGRA;
+        flag=1;
+    }
 
     //配置缩放器
     img_convert_ctx =sws_getCachedContext(img_convert_ctx,vedio_width,vedio_height,
-                                               AV_PIX_FMT_YUV420P,change_width,change_height,
-                                              AV_PIX_FMT_YUV420P,SWS_BICUBIC, NULL, NULL, NULL);
+                                               StreamType,change_width,change_height,
+                                              StreamType,flag, NULL, NULL, NULL);
+    //计算缩放后的图片大小并且填入数组中
+    int buff_size=av_image_get_buffer_size(StreamType,change_width,change_height,1);
+    unsigned char*buffer=(unsigned char*)av_malloc(buff_size);
+    av_image_fill_arrays(result_frame->data,result_frame->linesize,buffer,StreamType,change_width,change_height,1);
+
 
 }

@@ -8,6 +8,8 @@
 #include "help.h"
 #include <QFileDialog>
 #include <QListWidget>
+#include <QDialog>
+#include <QInputDialog>
 #if _MSC_VER >=1600 //VS2010版本号是1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -36,10 +38,12 @@ private:
     QAction add_av;
     QAction remove_av;
     QAction remove_all;
+    QAction RtspStream;
 public slots:
     void addfilename();
     void remove_index();
     void remove_allfile();
+    void RtspstreamGet();
     void double_list(QListWidgetItem *item);
 };
 

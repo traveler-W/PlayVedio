@@ -10,6 +10,10 @@ extern Frame_nums<AVFrame> faudio_nums;
 
 dexcodecthto_audio::dexcodecthto_audio()
 {
+    if(vedio_frame.RtspStream)
+    {
+       type=StreamType::RTSP_STREAM;
+    }
     abort=1;
 }
 
@@ -35,11 +39,15 @@ void dexcodecthto_audio::run()
              is_create=avcodec_receive_frame(codec_ctx,frame);
              if(is_create==0)
              {
-                 //队列形式播放
-                 //audio_frame.push(frame);
+                 if(type==StreamType::RTSP_STREAM)
+                 {
+                     //队列形式播放
+                     audio_frame.push(frame);
 
-                 //数组形式
-                 faudio_nums.fream_push(frame);
+                 }else{
+                     //数组形式
+                     faudio_nums.fream_push(frame);
+                 }
              }
              else if(AVERROR(EAGAIN)==is_create)
              {
@@ -66,9 +74,25 @@ void dexcodecthto_audio::init(AVCodecParameters *par)
         qDebug()<<"avcodec_parameters_to_context error....";
     }
     //查找相应流的解码器
+    if(type==StreamType::RTSP_STREAM)
+    {
+        //以rtsp拉流的方式打开解码器
+        // 设置缓存大小 1024000byte
+           av_dict_set(&pAVDictionary, "buffer_size", "1024000", 0);
+           // 设置超时时间 20s
+           av_dict_set(&pAVDictionary, "stimeout", "20000000", 0);
+           // 设置最大延时 3s
+           av_dict_set(&pAVDictionary, "max_delay", "30000000", 0);
+           // 设置打开方式 tcp/udp
+           av_dict_set(&pAVDictionary, "rtsp_transport", "tcp", 0);
 
+           ret=avcodec_open2(codec_ctx,codec,&pAVDictionary);
+           //qDebug()<<"使用了该解码器";
+           goto end;
+    }
     //打开解码器
     ret=avcodec_open2(codec_ctx,codec,NULL);
+    end:
     if(ret<0)
     {
         qDebug()<<"avcodec_open2 erroe......";

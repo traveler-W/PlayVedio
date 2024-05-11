@@ -1,4 +1,4 @@
-#ifndef MYQUEUE_H
+﻿#ifndef MYQUEUE_H
 #define MYQUEUE_H
 #include <QQueue>
 #include <QMutex>
@@ -7,6 +7,12 @@
 #include "include_head.h"
 #include "log.h"
 #include <QDebug>
+
+enum class StreamType{
+    NORMAL_STREAM,
+    RTSP_STREAM,
+    RTMP_STREAM
+} ;
 template <class T>
 class Myqueue
 {
@@ -14,10 +20,11 @@ public:
     Myqueue()=default;
     bool f_push;
     bool f_pop;
+    bool RtspStream=false;
     void push(T* t)
     {
         pushmutex.lock();
-        if(MyQ.size()>=20)
+        if(MyQ.size()>=100)
         {
             f_push=pushMywaitcondition.wait(&pushmutex);
             if(f_push==false)
@@ -41,7 +48,6 @@ public:
                 popmutex.unlock();
                 LOG(logtype::ERRORLOG,"this is error wait....");
             }
-
         }
         T*part;
         if(!MyQ.isEmpty())

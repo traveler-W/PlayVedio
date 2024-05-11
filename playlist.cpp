@@ -25,6 +25,9 @@ void playlist::init()
     mymenu.addSeparator();
     remove_all.setText("清空列表");
     mymenu.addAction(&remove_all);
+    mymenu.addSeparator();
+    RtspStream.setText("rtsp拉流");
+    mymenu.addAction(&RtspStream);
     setqss_active();
 }
 
@@ -47,6 +50,7 @@ void playlist::connect_signal()
     connect(&add_av,&QAction::triggered,this,&playlist::addfilename);
     connect(&remove_av,&QAction::triggered,this,&playlist::remove_index);
     connect(&remove_all,&QAction::triggered,this,&playlist::remove_allfile);
+    connect(&RtspStream,&QAction::triggered,this,&playlist::RtspstreamGet);
     connect(ui->listWidget,&QListWidget::itemDoubleClicked,this,&playlist::double_list);
 
 }
@@ -97,6 +101,12 @@ void playlist::remove_index()
 void playlist::remove_allfile()
 {
     ui->listWidget->clear();
+}
+
+void playlist::RtspstreamGet()
+{
+    QString rtspUrl=QInputDialog::getText(this,"拉流框","输入rtsp流地址",QLineEdit::Normal,"",nullptr);
+    emit sendfilename(rtspUrl,rtspUrl);
 }
 
 void playlist::double_list(QListWidgetItem *item)

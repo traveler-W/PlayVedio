@@ -33,11 +33,14 @@ public:
         return t;
     }
     int abort;
+
+    bool RtspStream=false;
+
 private:
     int vedio_index=0;
     int audio_index=0;
     QString file_url;
-    //解复用器
+      //解复用器
     AVFormatContext *f_ctx;
     int Secondall;
     int Secondstart;

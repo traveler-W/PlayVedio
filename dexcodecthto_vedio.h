@@ -1,4 +1,4 @@
-#ifndef DEXCODECTHTO_H
+﻿#ifndef DEXCODECTHTO_H
 #define DEXCODECTHTO_H
 #include "include_head.h"
 #include "myqueue.h"
@@ -22,6 +22,8 @@ public:
     void init(AVCodecParameters *par);
 
 private:
+    AVDictionary *pAVDictionary = 0;//配置编解码器的一些相关配置
+    StreamType type;
     AVCodecContext* codec_ctx;//解码器相关结构体
     int Packet_type;
     const AVCodec *codec;

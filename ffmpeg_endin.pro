@@ -28,6 +28,7 @@ SOURCES += \
     main.cpp \
     myqueue.cpp \
     playlist.cpp \
+    rtspsream.cpp \
     showme.cpp \
     title.cpp \
     vedio_play.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     log.h \
     myqueue.h \
     playlist.h \
+    rtspsream.h \
     showme.h \
     title.h \
     vedio_play.h \

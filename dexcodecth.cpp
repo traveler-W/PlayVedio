@@ -1,6 +1,7 @@
 ﻿#include "dexcodecth.h"
 extern Myqueue<AVPacket> vedio_packet;
 extern Myqueue<AVPacket> audio_packet;
+extern Myqueue<AVFrame>  vedio_frame;
 Dexcodecth::Dexcodecth()
 {
     abort=1;
@@ -21,6 +22,7 @@ void Dexcodecth::run()
         else if(pkt->stream_index==audio_index)
         {
             audio_packet.push(pkt);
+            //av_packet_unref(pkt);
 
         }
         else{
@@ -37,6 +39,16 @@ void Dexcodecth::init(const char *filename)
     f_ctx=avformat_alloc_context();
     int ret =0;
     ret = avformat_open_input(&f_ctx,filename,NULL,NULL);
+
+    //判断是否为rtsp拉流
+    QString FileRtsp=QString(QLatin1String(filename));
+    if(FileRtsp.startsWith("rtsp:"))
+    {
+        vedio_packet.RtspStream=true;
+        vedio_frame.RtspStream=true;
+        qDebug()<<"确定为rtsp流---"<<FileRtsp;
+    }
+
     if(ret!=0)
     {
         LOG(logtype::ERRORLOG,"error this open filename %d",ret);
@@ -48,10 +60,12 @@ void Dexcodecth::init(const char *filename)
 
     }
     //将视频的总长度发送给控制面板
+    if(!RtspStream)
+    {
+        Secondall=f_ctx->duration;
+        Secondstart=f_ctx->start_time;
 
-    Secondall=f_ctx->duration;
-    Secondstart=f_ctx->start_time;
-
+    }
 
     //寻找流信息
     for(unsigned i=0;i<f_ctx->nb_streams;i++)

@@ -58,10 +58,18 @@ void fill_audio_pcm(void *udata,Uint8*stream,int len)
         if(is->audio_buf_index==is->audio_buf_size){//判断这一帧数据是否读取完毕
             is->audio_buf_index=0;
             AVFrame*frame;
-            //frame =audio_frame.pop();
 
-            //数组中取出数据
-            frame=faudio_nums.frame_pop();
+            if(vedio_frame.RtspStream)
+            {
+               frame =audio_frame.pop();
+            }else{
+               //数组中取出数据
+               frame=faudio_nums.frame_pop();
+               if(faudio_nums.v_index>=faudio_nums.V.size())
+               {
+                   return;
+               }
+            }
 
             if(frame)
             {
@@ -110,7 +118,10 @@ void fill_audio_pcm(void *udata,Uint8*stream,int len)
                     is->audio_buf_size=audio_size;
                     memcpy(is->audio_buf,frame->data[0],audio_size);//填入数据
                 }
-                //av_frame_free(&frame);
+                if(vedio_frame.RtspStream)
+                {
+                    av_frame_free(&frame);
+                }
             }else{
                 is->audio_buf=NULL;
                 is->audio_buf_size=512;
@@ -153,7 +164,6 @@ void fill_audio_pcm(void *udata,Uint8*stream,int len)
         //qDebug()<<pts_;
         is->sync->Setclock(pts_);
     }
-
 }
 
 

@@ -170,7 +170,6 @@ void Widget::exit_play()
 
 void Widget::start_av(QString filename)
 {
-
     is_strat=true;
     //解复用
     Dex=new Dexcodecth();
